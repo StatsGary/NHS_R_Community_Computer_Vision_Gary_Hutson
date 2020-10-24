@@ -10,3 +10,7 @@ If you have any questions - please contact me via my website <a href="https://hu
 
 I hope you found this session informative, and for those Deep Learners out there, I would love to see if you can get better than 72% accuracy on the models. Please drop me a line and we can discuss how you did this. 
 
+Thanks all the followers and please watch my repos for more cool stuff. 
+
+![GaryHutson](NHSRComm.png)
+
