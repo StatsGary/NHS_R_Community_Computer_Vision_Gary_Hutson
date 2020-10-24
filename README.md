@@ -12,5 +12,5 @@ I hope you found this session informative, and for those Deep Learners out there
 
 Thanks all the followers and please watch my repos for more cool stuff. 
 
-![GaryHutson](NHSRComm.png)
+![GaryHutson](GARYHUTSON.jpg)
 
