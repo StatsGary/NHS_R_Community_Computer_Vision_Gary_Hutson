@@ -1,6 +1,6 @@
 # NHS R Community - Computer Vision Lightening Talk - 12/10/2020
 
-![NHSRCommunity](Dragster.jpg)
+![NHSRCommunity](NHSRComm.png)
 
 The computer vision code is hosted on my cloud account. Click the <a href="https://1drv.ms/u/s!Aq5aEUcRx5IqgoASR6poEt9lj5EsrA?e=woq0g5">link</a> to access.
 
