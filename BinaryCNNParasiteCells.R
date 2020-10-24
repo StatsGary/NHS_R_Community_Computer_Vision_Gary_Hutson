@@ -1,3 +1,21 @@
+###########################################################################
+###########################################################################
+###                                                                     ###
+###         Script name:  BinaryCNNParasiteCells.R                      ###
+###         Author:       Gary Hutson                                   ###
+###         Date Created: 23/10/2020                                    ###
+###         Description:  CNN of malaria parasite cells classification  ###
+###         Copyright:    All reprints and usage should be cited        ###
+###                                                                     ###
+###########################################################################
+###########################################################################
+
+
+# -----------------------------------------------------------
+#                     Load in libraries                    #
+# -----------------------------------------------------------
+
+
 library(tensorflow)
 library(keras)
 library(plyr)
@@ -13,7 +31,9 @@ library(abind)
 library(imager)
 library(purrr)
 
-# FUNCTIONS
+# -----------------------------------------------------------
+#                     Create Function                       #
+# -----------------------------------------------------------
 
 show_image <- function(path){
   
@@ -36,7 +56,9 @@ get_image_info <- function(img){
 }
 
 
-# From the images from the directories - these have images
+# -----------------------------------------------------------
+#                     Set directories of images             #
+# -----------------------------------------------------------
 
 #setwd("C:/Users/GaryHutson/Desktop/NHS R Community - Lightening Talk 2020")
 dataset_dir <- "Data/cell_images/"
@@ -67,9 +89,9 @@ dim(uninfected_image)
 # Loop through all images to get the image info
 
 
-# Create an animation of the parasite images in train
-
-
+# -----------------------------------------------------------
+#                     Create image animations               #
+# -----------------------------------------------------------
 
 system.time(train_parasite[1:100] %>%
   map(image_read) %>%
@@ -86,8 +108,9 @@ system.time(train_uninfected[1:100] %>%
               image_write("Data/Uninfected_Cells.gif"))
 
 
-#------------------------------ BUILD MODEL SKELETON ---------------------------------------
-
+# -----------------------------------------------------------
+#                    Build Baseline Model                   #
+# -----------------------------------------------------------
 image_shape <- c(130,130,3)
 print(image_shape)
 
@@ -115,7 +138,9 @@ model <- keras_model_sequential() %>%
   layer_dense(1, activation = "sigmoid") %>% 
   layer_dropout(0.5)
 
-
+# -----------------------------------------------------------
+#                     Compile baseline model                #
+# -----------------------------------------------------------
 
 
 model %>% 
@@ -127,7 +152,6 @@ model %>%
 
 print(model) # This will print the model structure
 
-######################## RESCALE IMAGES AND FLOW IMAGES TO DIRECTORY######################
 
 train_datagen <- image_data_generator(rescale = 1/255)
 test_datagen <- image_data_generator(rescale=1/255)
@@ -162,13 +186,15 @@ history <- model %>% fit_generator(
 
 model %>% save_model_hdf5("Data/parasite_cells_classification.h5")
 
-#------------------ USE IMAGE DATA GENERATOR TO INCREASE SAMPLES -------------------------
+# -----------------------------------------------------------
+#           Image Augmentation to improve model             #
+# -----------------------------------------------------------
 
 image_gen <- image_data_generator(rotation_range = 40,
                                   width_shift_range = 0.1,
                                   height_shift_range = 0.1, 
                                   shear_range = 0.1,
-                                  zoom_range = 0.8,
+                                  zoom_range = 0.8, #Zoom is the key addition
                                   horizontal_flip = T,
                                   fill_mode = 'nearest',
                                   rescale = 1/255)
@@ -180,8 +206,9 @@ test_datagen <- image_data_generator(rescale=1/255)
 
 
 
-# use the original test and train generators configured on lines 122 and 123
-
+# -----------------------------------------------------------
+#           Create Augmented Model                         #
+# -----------------------------------------------------------
 # Create a new model
 model <- keras_model_sequential() %>% 
   layer_conv_2d(filters=32, kernel_size=c(3,3), activation = "relu",
@@ -214,7 +241,9 @@ model %>%  compile(
 # Get model summary 
 summary(model)
 
-# Create a new instance of train and test generators with the augmented images
+# -----------------------------------------------------------
+#           Create augmented versions of images            #
+# -----------------------------------------------------------
 
 train_gen_augment <- flow_images_from_directory(
   train_dir,
@@ -247,14 +276,25 @@ history_augment <- model %>%
 
 
 
-# Save the model with the better fit
+# -----------------------------------------------------------
+#           Save best fitting model                       #
+# -----------------------------------------------------------
 
 summary(history_augment$metrics$acc)
 
 model %>% save_model_hdf5("Data/parasite_cells_classification_augmented.h5")
 
+# -----------------------------------------------------------
+#          Load model to replace the need to train model    #
+# -----------------------------------------------------------
+
 
 model <- load_model_hdf5("Data/parasite_cells_classification_augmented.h5")
+
+
+# -----------------------------------------------------------
+#  Predicting and preprocessing test image for prediction   #
+# -----------------------------------------------------------
 
 
 # Make a prediction with our model
@@ -283,6 +323,14 @@ print(pred)
 
 # Due to keras from directory sorting by alphabetical order
 # Parasite will be give label 0 and Uninfected 1, so we switch these
+
+# -----------------------------------------------------------
+# -----------------------------------------------------------
+# -----------------------------------------------------------
+#                        EOF                                #
+# -----------------------------------------------------------
+# -----------------------------------------------------------
+# -----------------------------------------------------------
 
 
 
